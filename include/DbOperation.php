@@ -31,7 +31,43 @@ class DbOperation
             $apikey = $this->generateApiKey();
 
             //membuat statement
-            
+            $stmt = $this->con->prepare("INSERT INTO students(name, username, password, api_key) values(?, ?, ?, ?)");
+
+            //mengikat parameter
+            $stmt->bind_param("ssss", $name, $username, $password, $apikey);
+
+            //mengeksekusi statement
+            $result = $stmt->execute();
+
+            //menutup statement
+            $stmt->close();
+
+            //jika statement tereksekusi dengan sukses
+            if ($result) {
+                //Mengembalikan 0 berarti siswa berhasil dibuat
+                return 0;
+            } else {
+                //Returning 1 means failed to create student
+                return 1;
+            }
+        } else {
+            //returning 2 means user already exist in the database
+            return 2;
         }
+    }
+
+    //methode for student login
+    public function studentLogin($username, $pass)
+    {
+        //Menghasilkan hash kata sandi
+        $password = md5($pass);
+
+        //membuat query
+        $stmt = $this->con->prepare("SELECT  * FROM students WHERE username=? and password=?");
+
+        //mengikat parameter
+        $stmt->bind_param("ss", $username,$password);
+
+        
     }
 }
